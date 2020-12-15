@@ -26,10 +26,18 @@ export default function appSrc(express, bodyParser, createReadStream, crypto, ht
     .get('/login/', (req, res) => res.send('strax5'))
   
     .get('/test/', async (req, res) => {
+    
+    let options = new chrome.Options();
+//Below arguments are critical for Heroku deployment
+options.addArguments("--headless");
+options.addArguments("--disable-gpu");
+options.addArguments("--no-sandbox");
+    
       const url = req.query.URL;
       console.log(url);
       let driver = new webdriver.Builder()
           .forBrowser('chrome')
+          .setChromeOptions(options)
           .build();
       await driver.get(url);
       const button = driver.wait(
