@@ -1,3 +1,4 @@
+  
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
@@ -5,7 +6,7 @@ const CORS = {
     'x-test,Content-Type,Accept, Access-Control-Allow-Headers',
 };
 
-export default function appSrc(express, bodyParser, createReadStream, crypto, http,puppeteer) {
+export default function appSrc(express, bodyParser, createReadStream, crypto, http, webdriver) {
   const app = express();
 
   app
@@ -26,21 +27,20 @@ export default function appSrc(express, bodyParser, createReadStream, crypto, ht
   
     .get('/test/', async (req, res) => {
       const url = req.query.URL;
-      //console.log(url);
-      //console.log("Начало загрузки браузера");
-      const browser = await puppeteer.launch({
-        headless: false,
-        args: ['--no-sandbox' ] //'--disable-setuid-sandbox']
-        });
-      //console.log("Браузер загрузился");
-      const page = await browser.newPage();
-      await page.goto(url);
-      await page.waitForSelector('#bt');
-      await page.click('#bt');
-      await page.waitForSelector('#inp');
-      const got = await page.$eval('#inp', el = el.value);
+      console.log(url);
+      let driver = new webdriver.Builder()
+          .forBrowser('chrome')
+          .build();
+      await driver.get(url);
+      const button = driver.wait(
+        until.elementLocated(By.id('bt')),
+        10000
+        );
+      button.click();
+      const field_inpt = driver.findElement(By.name('inp'))
+      const got = field_inpt.value();
       console.log(got);
-      browser.close();
+      await driver.quit();
       res
           .set({
             'Content-Type': 'text/plain; charset=utf-8',
@@ -74,3 +74,5 @@ export default function appSrc(express, bodyParser, createReadStream, crypto, ht
   
   return app;
 }
+
+
