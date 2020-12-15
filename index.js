@@ -4,9 +4,10 @@ import { createReadStream } from 'fs';
 import crypto from 'crypto';
 import http from 'http';
 import webdriver from 'selenium-webdriver';
+import chrome from 'selenium-webdriver/chrome';
 
 import appSrc from './app.js';
 
-const app = appSrc(express, bodyParser, createReadStream, crypto, http, webdriver);
+const app = appSrc(express, bodyParser, createReadStream, crypto, http, webdriver, chrome);
 
 app.listen(process.env.PORT);
