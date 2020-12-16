@@ -3,11 +3,12 @@ import bodyParser from 'body-parser';
 import { createReadStream } from 'fs';
 import crypto from 'crypto';
 import http from 'http';
-import webdriver from 'selenium-webdriver';
-import chrome from 'selenium-webdriver/chrome';
+// import puppeteer from 'puppeteer';
+import Browser from 'zombie';
+import assert from 'assert';
 
 import appSrc from './app.js';
 
-const app = appSrc(express, bodyParser, createReadStream, crypto, http, webdriver, chrome);
+const app = appSrc(express, bodyParser, createReadStream, crypto, http, Browser, assert);
 
 app.listen(process.env.PORT);
