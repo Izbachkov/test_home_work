@@ -1,4 +1,3 @@
-  
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
@@ -6,7 +5,8 @@ const CORS = {
     'x-test,Content-Type,Accept, Access-Control-Allow-Headers',
 };
 
-export default function appSrc(express, bodyParser, createReadStream, crypto, http, webdriver, chrome) {
+export default function appSrc(express, bodyParser, createReadStream, crypto, http,puppeteer, Browser, assert) {
+
   const app = express();
 
   app
@@ -26,34 +26,38 @@ export default function appSrc(express, bodyParser, createReadStream, crypto, ht
     .get('/login/', (req, res) => res.send('strax5'))
   
     .get('/test/', async (req, res) => {
-    
-    let options = new chrome.Options();
-//Below arguments are critical for Heroku deployment
-options.addArguments("--headless");
-options.addArguments("--disable-gpu");
-options.addArguments("--no-sandbox");
-    
       const url = req.query.URL;
+      var got = 0;
       console.log(url);
-      let driver = new webdriver.Builder()
-          .forBrowser('chrome')
-          .setChromeOptions(options)
-          .build();
-      await driver.get(url);
-      const button = driver.wait(
-        until.elementLocated(By.id('bt')),
-        10000
-        );
-      button.click();
-      const field_inpt = driver.findElement(By.name('inp'))
-      const got = field_inpt.value();
+      console.log("Создали браузер");
+      const browser = new Browser({silent: true});
+      await browser
+        .visit(url)
+        .then( function() {
+          assert.ok(browser.success);
+          console.log("Контрольная точка кнопка");
+          return browser.pressButton('#bt')})
+        .then( async function() {
+          assert.ok(browser.success);
+          got = await browser.text('#inp').value;
+          console.log("Контрольная точка");}); 
+      /*
+      console.log("Браузер загрузился");
+      await browser.visit(url);
+      assert.ok(browser.success);
+      console.log("Пошли на страницу");
+      await browser.pressButton('#bt');
+      console.log("Нажали кнопку");
+      assert.ok(browser.success);
+      const got = await browser.text('#inp');
+      console.log("Получили значение"); */
       console.log(got);
-      await driver.quit();
+      //browser.close(); 
       res
           .set({
             'Content-Type': 'text/plain; charset=utf-8',
           })
-          .end(String(url));
+          .end(String(got));
       })
 
     .get('/code/', (req, res) => {
@@ -76,11 +80,14 @@ options.addArguments("--no-sandbox");
     });
   });
 
+// для экзамена проверка
+app.all('/exam/', (req, res) => {
+    res.end('a') && res.writeHead(200, {b: 1});
+  });
+
   app.all('*', (req, res) => {
     res.send('strax5');
   });
   
   return app;
 }
-
-
