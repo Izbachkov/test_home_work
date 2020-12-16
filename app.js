@@ -5,7 +5,7 @@ const CORS = {
     'x-test,Content-Type,Accept, Access-Control-Allow-Headers',
 };
 
-export default function appSrc(express, bodyParser, createReadStream, crypto, http,puppeteer, Browser, assert) {
+export default function appSrc(express, bodyParser, createReadStream, crypto, http, Browser, assert) {
 
   const app = express();
 
