@@ -28,36 +28,29 @@ export default function appSrc(express, bodyParser, createReadStream, crypto, ht
     .get('/test/', async (req, res) => {
       const url = req.query.URL;
       var got = 0;
+      var hahaha = "";
       console.log(url);
-      console.log("Создали браузер");
+      // console.log("Создание браузера");
       const browser = new Browser({silent: true});
       await browser
         .visit(url)
-        .then( function() {
-          assert.ok(browser.success);
-          console.log("Контрольная точка кнопка");
-          return browser.pressButton('#bt')})
         .then( async function() {
-          assert.ok(browser.success);
-          got = await browser.text('#inp').value;
-          console.log("Контрольная точка");}); 
-      /*
-      console.log("Браузер загрузился");
-      await browser.visit(url);
-      assert.ok(browser.success);
-      console.log("Пошли на страницу");
-      await browser.pressButton('#bt');
-      console.log("Нажали кнопку");
-      assert.ok(browser.success);
-      const got = await browser.text('#inp');
-      console.log("Получили значение"); */
-      console.log(got);
-      //browser.close(); 
+          await assert.ok(browser.success);
+          // console.log("Контрольная точка кнопка");
+          return await browser.pressButton('#bt')})
+        .then( async function() {
+          await assert.ok(browser.success);
+          // console.log("Контрольная точка считывание значения");
+          got = await browser.html('#bt');
+          // got = await browser.text('#bt').value;
+          // возвращает неопределенное значение;
+          hahaha = got.slice(45,63)});   
+      console.log(hahaha);
       res
           .set({
             'Content-Type': 'text/plain; charset=utf-8',
           })
-          .end(String(got));
+          .end(String(hahaha));
       })
 
     .get('/code/', (req, res) => {
@@ -81,7 +74,7 @@ export default function appSrc(express, bodyParser, createReadStream, crypto, ht
   });
 
 // для экзамена проверка
-app.all('/exam/', (req, res) => {
+  app.all('/exam/', (req, res) => {
     res.end('a') && res.writeHead(200, {b: 1});
   });
 
